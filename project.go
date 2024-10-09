@@ -93,6 +93,13 @@ func (c *Client) GetProjects() ([]Project, *Link, error) {
 	return proj, link, err
 }
 
+// GetProjectsNoPage fetchs all projects in a sentry instance
+func (c *Client) GetProjectsNoPage() ([]Project, error) {
+	var proj []Project
+	err := c.do("GET", "projects", &proj, nil)
+	return proj, err
+}
+
 // GetOrgProjects fetchs all projects belonging to a organization
 func (c *Client) GetOrgProjects(o Organization) ([]Project, *Link, error) {
 	var proj []Project

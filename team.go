@@ -37,6 +37,13 @@ func (c *Client) GetTeams(o Organization) ([]Team, *Link, error) {
 	return teams, link, err
 }
 
+// GetTeamsNoPage will take a organization and retrieve a list of teams
+func (c *Client) GetTeamsNoPage(o Organization) ([]Team, error) {
+	teams := make([]Team, 0)
+	err := c.do(http.MethodGet, fmt.Sprintf("organizations/%s/teams", *o.Slug), &teams, nil)
+	return teams, err
+}
+
 // GetTeam takes a team slug and returns back the team
 func (c *Client) GetTeam(o Organization, teamSlug string) (Team, error) {
 	var team Team
