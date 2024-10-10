@@ -2,6 +2,7 @@ package sentry
 
 import (
 	"fmt"
+	"strings"
 	"time"
 )
 
@@ -102,9 +103,29 @@ func (c *Client) GetProjectsNoPage() ([]Project, error) {
 
 // GetOrgProjects fetchs all projects belonging to a organization
 func (c *Client) GetOrgProjects(o Organization) ([]Project, *Link, error) {
+	var projects []Project
 	var proj []Project
+
 	link, err := c.doWithPagination("GET", fmt.Sprintf("organizations/%s/projects", *o.Slug), &proj, nil)
-	return proj, link, err
+	projects = append(projects, proj...)
+	for link.Next.Results {
+		var proj2 []Project
+		link, err = c.doWithPagination("GET", strings.TrimPrefix(link.Next.URL, c.Endpoint), &proj2, nil)
+		projects = append(projects, proj2...)
+
+		if err != nil {
+			return nil, nil, err
+		}
+	}
+
+	return projects, link, err
+}
+
+// GetOrgProjectsNoPage fetchs all projects belonging to a organization
+func (c *Client) GetOrgProjectsNoPage(o Organization) ([]Project, error) {
+	var proj []Project
+	err := c.do("GET", fmt.Sprintf("organizations/%s/projects", *o.Slug), &proj, nil)
+	return proj, err
 }
 
 // DeleteProject will take your org, team, and proj and delete it from sentry.

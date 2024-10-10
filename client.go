@@ -127,7 +127,9 @@ func (c *Client) newRequest(method, endpoint string, in interface{}) (*http.Requ
 
 	finalEndpoint := c.Endpoint + endpoint
 	if !strings.HasSuffix(endpoint, "/") {
-		finalEndpoint = finalEndpoint + "/"
+		if !strings.Contains(endpoint, "cursor") {
+			finalEndpoint = finalEndpoint + "/"
+		}
 	}
 
 	req, err := http.NewRequest(method, finalEndpoint, bodyreader)
